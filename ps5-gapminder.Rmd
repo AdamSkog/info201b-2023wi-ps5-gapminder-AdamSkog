@@ -79,20 +79,41 @@ It looks OK, but there are noticeable instances of missing data which will need 
 # 2 Descriptive statistics (15pt)
 
 1. (3pt) How many countries are there in the dataset? Analyze all three: *iso3*, *iso2* and *name*.
+```{r}
+gm %>% 
+  summarize(
+    iso3_total = n_distinct(iso3, na.rm = T),
+    iso2_total = n_distinct(iso2, na.rm = T),
+    name_total = n_distinct(name, na.rm = T)
+    )
+```
 
 2. If you did this correctly, you saw that there are more iso-2 codes than names, and there are even more *iso3*-codes. What is going on? Can you find it out?
 
     (a) (5pt) Find how many names are there for each iso-2 code. Are there any iso-2 codes that correspond to more than one name? What are these countries?
+```{r}
+gm %>% 
+  group_by(iso2) %>% 
+  summarize(names_per_code = n_distinct(name)) %>% 
+  arrange(desc(names_per_code))
+```
+"NA" has two codes, likely due to the fact that Namibia's code is NA and was read as the value NA rather than the iso-2 code, and the other is because there is a value without a country name in the dataset.
     
     (b) (5pt) Now repeat the same for name and iso3-code. Are there country names that have more than one iso3-code? What are these countries? Hint: two of these entitites are *CHANISL* and *NLD CURACAO*.
+```{r}
+gm %>% 
+  group_by(name) %>% 
+  summarize(codes_per_name = n_distinct(iso3)) %>% 
+  arrange(desc(codes_per_name))
+```
     
 3. (2pt) What is the minimum and maximum year in these data?
 
 ```{r}
-x <- c(1, 2, 3)
-min(x)
-max(x)
+min(gm$time, na.rm = T)
+max(gm$time, na.rm = T)
 ```
+
 
 
 ---------------------------------------------------------------------
